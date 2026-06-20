@@ -43,7 +43,8 @@ export default function Assessment() {
 
     if (error) {
       console.error("Supabase error:", error);
-      alert("Failed to save assessment. Please try again.");
+      alert(JSON.stringify(error));
+console.error(error);
       return;
     }
 
