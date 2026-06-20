@@ -60,35 +60,40 @@ export default function Dashboard() {
   );
 
   const downloadPassport = async () => {
+  try {
     const passport = document.getElementById("passport");
 
-    if (!passport) return;
+    if (!passport) {
+      alert("Passport element not found");
+      return;
+    }
 
     const canvas = await html2canvas(passport, {
       scale: 2,
+      useCORS: true,
       backgroundColor: "#0f172a",
+      logging: true,
     });
 
     const imgData = canvas.toDataURL("image/png");
 
-    const pdf = new jsPDF("p", "mm", "a4");
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    });
 
     const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
-    const pdfHeight =
-      (canvas.height * pdfWidth) / canvas.width;
-
-    pdf.addImage(
-      imgData,
-      "PNG",
-      0,
-      0,
-      pdfWidth,
-      pdfHeight
-    );
+    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
 
     pdf.save("Climate-Passport.pdf");
-  };
+  } catch (error) {
+    console.error("PDF generation failed:", error);
+    alert("PDF generation failed. Check the browser console.");
+  }
+};
 
   return (
     <div className="min-h-screen bg-slate-900 text-white p-6">
